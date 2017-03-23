@@ -38,7 +38,7 @@ class HashServer(HashEngine):
 
         # request hashes from hashing server
         try:
-            response = self._session.post(self.endpoint, json=payload, headers=self.headers, timeout=30)
+            response = self._session.post(self.endpoint, json=payload, headers=self.headers, timeout=30, verify=False)
         except requests.exceptions.Timeout:
             raise HashingTimeoutException('Hashing request timed out.')
         except requests.exceptions.ConnectionError as error:
