@@ -148,9 +148,9 @@ class PGoApi:
         # Send empty initial request
         request = self.create_request()
         response = request.call()
-        
+
         time.sleep(1.5)
-        
+
         # Send GET_PLAYER only
         request = self.create_request()
         request.get_player(player_locale = {'country': 'US', 'language': 'en', 'timezone': 'America/Chicago'})
@@ -162,7 +162,7 @@ class PGoApi:
         time.sleep(1.5)
 
         request = self.create_request()
-        request.download_remote_config_version(platform=1, app_version=6304)
+        request.download_remote_config_version(platform=1, app_version=6701)
         request.check_challenge()
         request.get_hatched_eggs()
         request.get_inventory()

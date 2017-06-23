@@ -145,7 +145,7 @@ class RpcApi:
                 ticket = response_dict['envelope'].auth_ticket
                 if ticket:
                     self.check_authentication(ticket.expire_timestamp_ms, ticket.start, ticket.end)
-                                
+
             if status_code == 102:
                 raise AuthTokenExpiredException
             elif status_code == 52:
@@ -267,7 +267,7 @@ class RpcApi:
         sen.gravity_z = random.triangular(-1, .7, -0.8)
         sen.status = 3
 
-        sig.unknown25 = 5348175887752539474
+        sig.unknown25 = 5395925083854747393
 
         if self.device_info:
             for key in self.device_info:
@@ -399,9 +399,9 @@ class RpcApi:
 
         if not response_proto_dict:
             raise MalformedNianticResponseException('Could not convert protobuf to dict.')
-            
+
         response_proto_dict = self._parse_sub_responses(response_proto, subrequests, response_proto_dict, use_dict)
-        
+
         #It can't be done before
         if not use_dict:
             del response_proto_dict['envelope'].returns[:]
