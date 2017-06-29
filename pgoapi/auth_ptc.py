@@ -40,8 +40,8 @@ from requests.exceptions import RequestException, Timeout
 
 class AuthPtc(Auth):
 
-    PTC_LOGIN_URL1 = 'https://sso.pokemon.com/sso/oauth2.0/authorize?client_id=mobile-app_pokemon-go&redirect_uri=https%3A%2F%2Fwww.nianticlabs.com%2Fpokemongo%2Ferror'
-    PTC_LOGIN_URL2 = 'https://sso.pokemon.com/sso/login?service=http%3A%2F%2Fsso.pokemon.com%2Fsso%2Foauth2.0%2FcallbackAuthorize'
+    PTC_LOGIN_URL1 = 'https://sso.pokemon.com/sso/oauth2.0/authorize?client_id=mobile-app_pokemon-go&redirect_uri=https%3A%2F%2Fwww.nianticlabs.com%2Fpokemongo%2Ferror&locale=de_DE'
+    PTC_LOGIN_URL2 = 'https://sso.pokemon.com/sso/login?service=http%3A%2F%2Fsso.pokemon.com%2Fsso%2Foauth2.0%2FcallbackAuthorize&locale=de_DE'
     PTC_LOGIN_OAUTH = 'https://sso.pokemon.com/sso/oauth2.0/accessToken'
     PTC_LOGIN_CLIENT_SECRET = 'w8ScCUXJQc6kXKw8FiOhd8Fixzht18Dq3PEVkUCP5ZPxtgyWsbTvWHFLm2wNY0JR'
 
@@ -51,7 +51,15 @@ class AuthPtc(Auth):
         self._auth_provider = 'ptc'
 
         self._session = requests.session()
-        self._session.headers = {'User-Agent': user_agent or 'pokemongo/1 CFNetwork/811.4.18 Darwin/16.5.0', 'Host': 'sso.pokemon.com', 'X-Unity-Version': '5.5.1f1'}
+
+        self._session.headers = {
+            'Host': 'sso.pokemon.com',
+            'Connection': 'keep-alive',
+            'User-Agent': user_agent or 'pokemongo/1 CFNetwork/811.4.18 Darwin/16.5.0',
+            'Accept-Language': 'de-DE',
+            'X-Unity-Version': '5.5.1f1'
+        }
+
         self._username = username
         self._password = password
         self.timeout = timeout or 15
@@ -70,7 +78,7 @@ class AuthPtc(Auth):
         now = get_time()
 
         try:
-            r = self._session.get(self.PTC_LOGIN_URL1, timeout=self.timeout)
+            r = self._session.get(self.PTC_LOGIN_URL1, headers={'Content-Length': '-1'}, timeout=self.timeout)
         except Timeout:
             raise AuthTimeoutException('Auth GET timed out.')
         except RequestException as e:
@@ -88,7 +96,7 @@ class AuthPtc(Auth):
             raise AuthException('Invalid JSON response: {}'.format(e))
 
         try:
-            r = self._session.post(self.PTC_LOGIN_URL2, data=data, timeout=self.timeout, allow_redirects=False)
+            r = self._session.post(self.PTC_LOGIN_URL2, headers={'Content-Type': 'application/x-www-form-urlencoded'}, data=data, timeout=self.timeout, allow_redirects=False)
         except Timeout:
             raise AuthTimeoutException('Auth POST timed out.')
         except RequestException as e:
