@@ -61,7 +61,12 @@ class PGoApi:
         self._hash_server_token = None
 
         self._session = requests.session()
-        self._session.headers.update({'User-Agent': 'Niantic App'})
+        self._session.headers.update({
+            'User-Agent': 'Niantic App',
+            'Accept': '*/*',
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Accept-Language': 'en-us'
+        })
         self._session.verify = True
 
         if proxy_config is not None:
