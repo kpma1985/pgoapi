@@ -78,6 +78,9 @@ class PGoApi:
     def set_logger(self, logger=None):
         self.log = logger or logging.getLogger(__name__)
 
+    def get_api_version(self):
+        return 6701
+
     def set_authentication(self, provider=None, oauth2_refresh_token=None, username=None, password=None, proxy_config=None, user_agent=None, timeout=None, locale=None):
         if provider == 'ptc':
             self._auth_provider = AuthPtc(user_agent=user_agent, timeout=timeout, locale=locale)
@@ -168,7 +171,7 @@ class PGoApi:
         time.sleep(1.5)
 
         request = self.create_request()
-        request.download_remote_config_version(platform=1, app_version=6701)
+        request.download_remote_config_version(platform=1, app_version=self.get_api_version())
         request.check_challenge()
         request.get_hatched_eggs()
         request.get_inventory()
