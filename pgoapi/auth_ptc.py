@@ -82,7 +82,7 @@ class AuthPtc(Auth):
         now = get_time()
 
         try:
-            r = self._session.get(self.PTC_LOGIN_URL1, params={'client_id': 'mobile-app_pokemon-go', 'redirect_uri': 'https://www.nianticlabs.com/pokemongo/error', 'locale': self.locale}, headers={'Content-Length': '-1'}, timeout=self.timeout)
+            r = self._session.get(self.PTC_LOGIN_URL1, params={'client_id': 'mobile-app_pokemon-go', 'redirect_uri': 'https://www.nianticlabs.com/pokemongo/error', 'locale': self.locale}, timeout=self.timeout)
         except Timeout:
             raise AuthTimeoutException('Auth GET timed out.')
         except RequestException as e:
