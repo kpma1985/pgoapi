@@ -78,7 +78,8 @@ class PGoApi:
     def set_logger(self, logger=None):
         self.log = logger or logging.getLogger(__name__)
 
-    def get_api_version(self):
+    @staticmethod
+    def get_api_version():
         return 6701
 
     def set_authentication(self, provider=None, oauth2_refresh_token=None, username=None, password=None, proxy_config=None, user_agent=None, timeout=None, locale=None):
@@ -252,7 +253,7 @@ class PGoApiRequest:
 
         response = None
         execute = True
-        
+
         while execute:
             execute = False
 
