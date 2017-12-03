@@ -64,7 +64,7 @@ class AuthPtc(Auth):
             'User-Agent': self.user_agent,
             'Accept-Language': self.locale.lower().replace('_', '-'),
             'Accept-Encoding': 'gzip, deflate',
-            'X-Unity-Version': '5.5.1f1'
+            'X-Unity-Version': '2017.1.2f1'
         }
 
     def set_proxy(self, proxy_config):
