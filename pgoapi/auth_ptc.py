@@ -65,7 +65,7 @@ class AuthPtc(Auth):
             'User-Agent': user_agent or 'pokemongo/1 CFNetwork/811.4.18 Darwin/16.5.0',
             'Accept-Language': self.locale.lower().replace('_', '-'),
             'Accept-Encoding': 'gzip-deflate',
-            'X-Unity-Version': '5.5.1f1'
+            'X-Unity-Version': '2017.1.2f1'
         }
 
     def set_proxy(self, proxy_config):
