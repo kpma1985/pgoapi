@@ -180,7 +180,7 @@ class AuthPtc(Auth):
         except RequestException as e:
             raise AuthException('Caught RequestException: {}'.format(e))
         except (AssertionError, TypeError, ValueError) as e:
-            raise AuthException('Invalid initial JSON response.')
+            raise AuthException('Invalid initial JSON response: {}'.format(e))
 
         if self._access_token:
             self._login = True
