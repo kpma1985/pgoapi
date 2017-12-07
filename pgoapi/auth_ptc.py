@@ -54,7 +54,7 @@ class AuthPtc(Auth):
         self._password = password
         self.timeout = timeout or 10
         self.locale = locale or 'en_US'
-        self.user_agent = user_agent or 'pokemongo/1 CFNetwork/811.5.4 Darwin/16.7.0'
+        self.user_agent = user_agent or 'pokemongo/0 CFNetwork/811.5.4 Darwin/16.7.0'
 
         self._session = requests.session()
         self._session.headers = {
@@ -84,15 +84,23 @@ class AuthPtc(Auth):
         try:
             now = get_time()
 
-            authorize_params = {
-                'client_id': 'mobile-app_pokemon-go',
-                'redirect_uri': 'https://www.nianticlabs.com/pokemongo/error',
+            logout_params = {
+                'service': 'https://sso.pokemon.com/sso/oauth2.0/callbackAuthorize'
+            }
+            r = self._session.get(
+                'https://sso.pokemon.com/sso/logout',
+                params=logout_params,
+                timeout=self.timeout,
+                allow_redirects=False)
+            r.close()
+
+            login_params_get = {
+                'service': 'https://sso.pokemon.com/sso/oauth2.0/callbackAuthorize',
                 'locale': self.locale
             }
-
             r = self._session.get(
-                'https://sso.pokemon.com/sso/oauth2.0/authorize',
-                params=authorize_params,
+                'https://sso.pokemon.com/sso/login',
+                params=login_params_get,
                 timeout=self.timeout)
 
             data = r.json(encoding='utf-8')
@@ -104,29 +112,8 @@ class AuthPtc(Auth):
                 'password': self._password
             })
 
-            logout_params = {
-                'service': 'https%3A%2F%2Fsso.pokemon.com%2Fsso%2Foauth2.0%2FcallbackAuthorize',
-                'locale': self.locale
-            }
-            r = self._session.get(
-                'https://sso.pokemon.com/sso/logout',
-                params=logout_params,
-                timeout=self.timeout,
-                allow_redirects=False)
-            r.close()
-
-            login_params_get = {
-                'service': 'https%3A%2F%2Fsso.pokemon.com%2Fsso%2Foauth2.0%2FcallbackAuthorize',
-                'locale': self.locale
-            }
-            r = self._session.get(
-                'https://sso.pokemon.com/sso/login',
-                params=login_params_get,
-                timeout=self.timeout)
-            r.close()
-
             login_params_post = {
-                'service': 'http://sso.pokemon.com/sso/oauth2.0/callbackAuthorize',
+                'service': 'https://sso.pokemon.com/sso/oauth2.0/callbackAuthorize',
                 'locale': self.locale
             }
             login_headers_post = {
@@ -193,7 +180,7 @@ class AuthPtc(Auth):
         except RequestException as e:
             raise AuthException('Caught RequestException: {}'.format(e))
         except (AssertionError, TypeError, ValueError) as e:
-            raise AuthException('Invalid initial JSON response.')
+            raise AuthException('Invalid initial JSON response: {}'.format(e))
 
         if self._access_token:
             self._login = True
