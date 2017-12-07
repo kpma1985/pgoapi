@@ -85,7 +85,7 @@ class AuthPtc(Auth):
             now = get_time()
 
             logout_params = {
-                'service': 'https%3A%2F%2Fsso.pokemon.com%2Fsso%2Foauth2.0%2FcallbackAuthorize'
+                'service': 'https://sso.pokemon.com/sso/oauth2.0/callbackAuthorize'
             }
             r = self._session.get(
                 'https://sso.pokemon.com/sso/logout',
@@ -95,7 +95,7 @@ class AuthPtc(Auth):
             r.close()
 
             login_params_get = {
-                'service': 'https%3A%2F%2Fsso.pokemon.com%2Fsso%2Foauth2.0%2FcallbackAuthorize',
+                'service': 'https://sso.pokemon.com/sso/oauth2.0/callbackAuthorize',
                 'locale': self.locale
             }
             r = self._session.get(
@@ -113,7 +113,7 @@ class AuthPtc(Auth):
             })
 
             login_params_post = {
-                'service': 'http://sso.pokemon.com/sso/oauth2.0/callbackAuthorize',
+                'service': 'https://sso.pokemon.com/sso/oauth2.0/callbackAuthorize',
                 'locale': self.locale
             }
             login_headers_post = {
