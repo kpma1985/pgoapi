@@ -24,6 +24,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 
+
 _WEATHERALERT_SEVERITY = _descriptor.EnumDescriptor(
   name='Severity',
   full_name='pogoprotos.map.weather.WeatherAlert.Severity',

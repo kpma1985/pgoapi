@@ -28,6 +28,7 @@ _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 
 
+
 _LOBBY = _descriptor.Descriptor(
   name='Lobby',
   full_name='pogoprotos.data.raid.Lobby',

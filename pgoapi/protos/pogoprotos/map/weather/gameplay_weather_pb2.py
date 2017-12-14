@@ -24,6 +24,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 
+
 _GAMEPLAYWEATHER_WEATHERCONDITION = _descriptor.EnumDescriptor(
   name='WeatherCondition',
   full_name='pogoprotos.map.weather.GameplayWeather.WeatherCondition',
