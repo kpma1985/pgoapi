@@ -6,33 +6,33 @@ import requests
 
 from struct import pack, unpack
 
-from pgoapi.hash_engine import HashEngine
 from pgoapi.exceptions import BadHashRequestException, HashingOfflineException, HashingQuotaExceededException, HashingTimeoutException, MalformedHashResponseException, NoHashKeyException, TempHashingBanException, UnexpectedHashResponseException
 
 
-class HashServer(HashEngine):
+class HashServer:
     _session = requests.session()
-    _adapter = requests.adapters.HTTPAdapter(pool_maxsize=150, pool_block=True)
-    _session.mount('https://', _adapter)
+    _adapter = requests.adapters.HTTPAdapter(pool_maxsize=500, pool_block=True)
+    _session.mount('http://', _adapter)
     _session.verify = True
-    _session.headers.update({'User-Agent': 'Python pgoapi @pogodev'})
     endpoint = 'https://pokehash.buddyauth.com/api/v157_5/hash'
     status = {}
+    _endpoint = 'http://hash.goman.io/api/v157_5/hash'
+    _headers = {
+        'User-Agent': 'Python pgoapi @pogodev',
+        'content-type': 'application/json',
+        'Accept': 'application/json',
+        'X-MaxRPMCount': '32000'
+    }
 
-    def __init__(self, auth_token):
-        if not auth_token:
+    @staticmethod
+    def hash(timestamp, latitude, longitude, accuracy, authticket,
+             sessiondata, requestslist, token):
+
+        if not token:
             raise NoHashKeyException('Token not provided for hashing server.')
-        self.headers = {
-            'content-type': 'application/json',
-            'Accept': 'application/json',
-            'X-AuthToken': auth_token
-        }
 
-    def hash(self, timestamp, latitude, longitude, accuracy, authticket,
-             sessiondata, requestslist):
-        self.location_hash = None
-        self.location_auth_hash = None
-        self.request_hashes = []
+        headers = HashServer._headers.copy()
+        headers['X-AuthToken'] = token
 
         payload = {
             'Timestamp':
@@ -55,8 +55,8 @@ class HashServer(HashEngine):
 
         # request hashes from hashing server
         try:
-            response = self._session.post(
-                self.endpoint, json=payload, headers=self.headers, timeout=30)
+            response = HashServer._session.post(
+                HashServer._endpoint, json=payload, headers=headers, timeout=30)
         except requests.exceptions.Timeout:
             raise HashingTimeoutException('Hashing request timed out.')
         except requests.exceptions.ConnectionError as error:
@@ -83,26 +83,19 @@ class HashServer(HashEngine):
         if not response.content:
             raise MalformedHashResponseException('Response was empty')
 
-        headers = response.headers
-        try:
-            self.status['period'] = int(headers['X-RatePeriodEnd'])
-            self.status['remaining'] = int(headers['X-RateRequestsRemaining'])
-            self.status['maximum'] = int(headers['X-MaxRequestCount'])
-            self.status['expiration'] = int(headers['X-AuthTokenExpiration'])
-            self.status['token'] = self.headers['X-AuthToken']
-        except (KeyError, TypeError, ValueError):
-            pass
-
         try:
             response_parsed = response.json()
         except ValueError:
             raise MalformedHashResponseException(
                 'Unable to parse JSON from hash server.')
 
-        self.location_auth_hash = ctypes.c_int32(
+        location_auth_hash = ctypes.c_int32(
             response_parsed['locationAuthHash']).value
-        self.location_hash = ctypes.c_int32(
+        location_hash = ctypes.c_int32(
             response_parsed['locationHash']).value
 
+        request_hashes = []
         for request_hash in response_parsed['requestHashes']:
-            self.request_hashes.append(ctypes.c_int64(request_hash).value)
+            request_hashes.append(ctypes.c_uint64(request_hash).value)
+
+        return (location_hash, location_auth_hash, request_hashes, response.headers)

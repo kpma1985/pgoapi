@@ -24,18 +24,13 @@ Author: tjado <https://github.com/tejado>
 """
 
 from __future__ import absolute_import
-from future.standard_library import install_aliases
-install_aliases()
 
 import requests
-
-from urllib.parse import parse_qs, urlsplit
 from six import string_types
 
 from pgoapi.auth import Auth
 from pgoapi.utilities import get_time
 from pgoapi.exceptions import AuthException, AuthTimeoutException, InvalidCredentialsException
-
 from requests.exceptions import RequestException, Timeout, ProxyError, SSLError, ConnectionError
 
 
@@ -56,8 +51,12 @@ class AuthPtc(Auth):
         self.locale = locale or 'en_US'
         self.user_agent = user_agent or 'pokemongo/0 CFNetwork/893.14.2 Darwin/17.3.0'
 
-        self._session = requests.session()
-        self._session.headers = {
+    def set_proxy(self, proxy_config):
+        self.proxies = proxy_config
+
+    def get_session(self):
+        session = requests.session()
+        session.headers = {
             'Host': 'sso.pokemon.com',
             'Accept': '*/*',
             'Connection': 'keep-alive',
@@ -66,9 +65,9 @@ class AuthPtc(Auth):
             'Accept-Encoding': 'br, gzip, deflate',
             'X-Unity-Version': '2017.1.2f1'
         }
-
-    def set_proxy(self, proxy_config):
-        self._session.proxies = proxy_config
+        if self.proxies:
+            session.proxies = self.proxies
+        return session
 
     def user_login(self, username=None, password=None):
         self._username = username or self._username
@@ -79,7 +78,8 @@ class AuthPtc(Auth):
                 "Username/password not correctly specified")
 
         self.log.info('PTC User Login for: {}'.format(self._username))
-        self._session.cookies.clear()
+        session = self.get_session()
+        session.cookies.clear()
 
         try:
             now = get_time()
@@ -87,7 +87,7 @@ class AuthPtc(Auth):
             logout_params = {
                 'service': 'https://sso.pokemon.com/sso/oauth2.0/callbackAuthorize'
             }
-            r = self._session.get(
+            r = session.get(
                 'https://sso.pokemon.com/sso/logout',
                 params=logout_params,
                 timeout=self.timeout,
@@ -98,7 +98,7 @@ class AuthPtc(Auth):
                 'service': 'https://sso.pokemon.com/sso/oauth2.0/callbackAuthorize',
                 'locale': self.locale
             }
-            r = self._session.get(
+            r = session.get(
                 'https://sso.pokemon.com/sso/login',
                 params=login_params_get,
                 timeout=self.timeout)
@@ -119,7 +119,7 @@ class AuthPtc(Auth):
             login_headers_post = {
                 'Content-Type': 'application/x-www-form-urlencoded'
             }
-            r = self._session.post(
+            r = session.post(
                 'https://sso.pokemon.com/sso/login',
                 params=login_params_post,
                 headers=login_headers_post,
@@ -128,7 +128,7 @@ class AuthPtc(Auth):
                 allow_redirects=False)
 
             try:
-                self._access_token = self._session.cookies['CASTGC']
+                self._access_token = session.cookies['CASTGC']
             except (AttributeError, KeyError, TypeError):
                 try:
                     j = r.json(encoding='utf-8')
@@ -151,7 +151,7 @@ class AuthPtc(Auth):
             token_headers = {
                 'Content-Type': 'application/x-www-form-urlencoded'
             }
-            r = self._session.post(
+            r = session.post(
                 'https://sso.pokemon.com/sso/oauth2.0/accessToken',
                 headers=token_headers,
                 data=token_data,
@@ -166,7 +166,7 @@ class AuthPtc(Auth):
             profile_headers = {
                 'Content-Type': 'application/x-www-form-urlencoded'
             }
-            r = self._session.post(
+            r = session.post(
                 'https://sso.pokemon.com/sso/oauth2.0/profile',
                 headers=profile_headers,
                 data=profile_data,

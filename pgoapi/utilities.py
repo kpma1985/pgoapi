@@ -24,7 +24,6 @@ import struct
 import random
 import logging
 
-from json import JSONEncoder
 from binascii import unhexlify
 
 # other stuff
@@ -57,12 +56,6 @@ def d2h(f):
 def to_camel_case(value):
     return ''.join(word.capitalize() if word else '_'
                    for word in value.split('_'))
-
-
-# JSON Encoder to handle bytes
-class JSONByteEncoder(JSONEncoder):
-    def default(self, o):
-        return o.decode('utf-8')
 
 
 def get_pos_by_name(location_name):

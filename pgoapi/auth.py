@@ -122,3 +122,21 @@ class Auth:
 
         self.log.info('Access Token expired!')
         return False
+
+    def check_authentication(self, expire_timestamp_ms, start, end):
+        if self.is_new_ticket(expire_timestamp_ms):
+
+            had_ticket = self.has_ticket()
+            self.set_ticket([expire_timestamp_ms, start, end])
+
+            now_ms = get_time(ms=True)
+            h, m, s = get_format_time_diff(now_ms, expire_timestamp_ms, True)
+
+            if had_ticket:
+                self.log.debug(
+                    'Replacing old Session Ticket with new one valid for %02d:%02d:%02d hours (%s < %s)',
+                    h, m, s, now_ms, expire_timestamp_ms)
+            else:
+                self.log.debug(
+                    'Received Session Ticket valid for %02d:%02d:%02d hours (%s < %s)',
+                    h, m, s, now_ms, expire_timestamp_ms)

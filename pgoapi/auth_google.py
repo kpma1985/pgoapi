@@ -25,8 +25,6 @@ Author: tjado <https://github.com/tejado>
 
 from __future__ import absolute_import
 
-import logging
-
 from pgoapi.auth import Auth
 from pgoapi.exceptions import AuthException, InvalidCredentialsException, AuthGoogleTwoFactorRequiredException
 from gpsoauth import perform_master_login, perform_oauth
