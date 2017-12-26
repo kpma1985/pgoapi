@@ -49,6 +49,7 @@ class AuthPtc(Auth):
         self._password = password
         self.timeout = timeout or 10
         self.locale = locale or 'en_US'
+        self.proxies = None
         self.user_agent = user_agent or 'pokemongo/0 CFNetwork/893.14.2 Darwin/17.3.0'
 
     def set_proxy(self, proxy_config):
