@@ -13,10 +13,9 @@ class HashServer:
     _session = requests.session()
     _adapter = requests.adapters.HTTPAdapter(pool_maxsize=500, pool_block=True)
     _session.mount('http://', _adapter)
+    _session.mount('https://', _adapter)
     _session.verify = True
-    endpoint = 'https://pokehash.buddyauth.com/api/v157_5/hash'
-    status = {}
-    _endpoint = 'http://hash.goman.io/api/v157_5/hash'
+    _endpoint = 'https://pokehash.buddyauth.com/api/v157_5/hash'
     _headers = {
         'User-Agent': 'Python pgoapi @pogodev',
         'content-type': 'application/json',
