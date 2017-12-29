@@ -27,6 +27,7 @@ from __future__ import absolute_import
 
 import time
 import logging
+import sys
 
 from . import __title__, __version__, __copyright__
 from pgoapi.rpc_api import RpcApi, RpcState
@@ -307,11 +308,11 @@ class PGoApiRequest:
                 try:
                     self.log.info(
                         'Access Token rejected! Requesting new one...')
-                    self._auth_provider.get_access_token(force_refresh=True)
-                except Exception as e:
-                    error = 'Reauthentication failed: {}'.format(e)
-                    self.log.error(error)
-                    raise NotLoggedInException(error)
+                    self.state.auth_provider.get_access_token(force_refresh=True)
+                except Exception:
+                    type, value, traceback = sys.exc_info()
+                    raise NotLoggedInException, ('Reauthentication failed',
+                                                 type, value), traceback
 
                 execute = True  # reexecute the call
             except ServerApiEndpointRedirectException as e:
