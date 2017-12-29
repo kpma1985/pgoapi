@@ -20,14 +20,10 @@ Author: tjado <https://github.com/tejado>
 """
 
 import time
-import struct
 import random
 import logging
 
-from binascii import unhexlify
-
 # other stuff
-from geopy.geocoders import GoogleV3
 from s2sphere import LatLng, Angle, Cap, RegionCoverer, math
 
 log = logging.getLogger(__name__)
@@ -35,40 +31,9 @@ log = logging.getLogger(__name__)
 EARTH_RADIUS = 6371000  # radius of Earth in meters
 
 
-def f2i(float):
-    return struct.unpack('<Q', struct.pack('<d', float))[0]
-
-
-def f2h(float):
-    return hex(struct.unpack('<Q', struct.pack('<d', float))[0])
-
-
-def h2f(hex):
-    return struct.unpack('<d', struct.pack('<Q', int(hex, 16)))[0]
-
-
-def d2h(f):
-    hex_str = f2h(f)[2:].replace('L', '')
-    hex_str = ("0" * (len(hex_str) % 2)) + hex_str
-    return unhexlify(hex_str)
-
-
 def to_camel_case(value):
     return ''.join(word.capitalize() if word else '_'
                    for word in value.split('_'))
-
-
-def get_pos_by_name(location_name):
-    geolocator = GoogleV3()
-    loc = geolocator.geocode(location_name, timeout=10)
-    if not loc:
-        return None
-
-    log.info("Location for '%s' found: %s", location_name, loc.address)
-    log.info('Coordinates (lat/long/alt) for location: %s %s %s', loc.latitude,
-             loc.longitude, loc.altitude)
-
-    return (loc.latitude, loc.longitude, loc.altitude)
 
 
 def get_cell_ids(lat, long, radius=500):
