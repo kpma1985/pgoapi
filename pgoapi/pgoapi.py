@@ -76,7 +76,7 @@ class PGoApi:
         self.state = RpcState(device_info, None)
         if PGoApi.individual_session:
             self.state.session = RpcApi.create_session()
-        self.proxies = None
+        self.proxies = proxy_config
         self.hash_key = None
 
     def set_logger(self, logger=None):
